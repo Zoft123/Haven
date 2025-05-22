@@ -87,11 +87,11 @@ namespace Haven
 
             if (propId.StartsWith("PRP_RES_01_RACE_HOME_") || propId.StartsWith("PRP_RES_02_RACE_HOME_") || propId.StartsWith("PRP_RES_03_RACE_HOME_") || propId.StartsWith("PRP_RES_04_RACE_HOME_"))
                 return new GeoPropCategoryInfo("RACE", false);
-            if (propId.StartsWith("PRP_RACE_HOME_")) return new GeoPropCategoryInfo("RACE", false); 
+            if (propId.StartsWith("PRP_RACE_HOME_")) return new GeoPropCategoryInfo("RACE", false);
             if (propId.StartsWith("PRP_RES_01_RACE_BASE_") || propId.StartsWith("PRP_RES_02_RACE_BASE_") || propId.StartsWith("PRP_RES_03_RACE_BASE_") || propId.StartsWith("PRP_RES_04_RACE_BASE_"))
                 return new GeoPropCategoryInfo("RACE", false);
             if (propId.StartsWith("PRP_RACE_BASE_")) return new GeoPropCategoryInfo("RACE", false);
-            if (propId.StartsWith("PRP_RACE_TGT_")) return new GeoPropCategoryInfo("RACE", false);     
+            if (propId.StartsWith("PRP_RACE_TGT_")) return new GeoPropCategoryInfo("RACE", false);
             if (propId.StartsWith("PRP_RACE_A") || propId.StartsWith("PRP_RACE_B")) return new GeoPropCategoryInfo("RACE", false);
             if (propId.StartsWith("PRP_RACE_")) return new GeoPropCategoryInfo("RACE", false);
 
@@ -232,7 +232,7 @@ namespace Haven
 
         private void Scene_DragSelectDone(List<Mesh>? obj)
         {
-            if (obj == null) 
+            if (obj == null)
                 return;
 
             var props = new List<GeomProp>();
@@ -609,7 +609,7 @@ namespace Haven
             }
 
 
-         
+
             TreeNodeGeomMeshes.Nodes.Clear();
             foreach (var mesh in MeshGroups.OrderBy(x => x.ID))
             {
@@ -662,7 +662,7 @@ namespace Haven
             foreach (var propInfo in allSortedGeomProps)
             {
                 GeomProp prop = propInfo.Prop;
-                string propStringId = propInfo.MeshID; 
+                string propStringId = propInfo.MeshID;
 
                 if (!GeomPropMeshLookup.TryGetValue(prop, out Mesh? associatedMesh))
                     continue;
@@ -670,9 +670,9 @@ namespace Haven
                 if (!propStringId.ToLower().Contains(filterTextLower))
                     continue;
 
-                TreeNode propEntryNode = new TreeNode(propStringId); 
+                TreeNode propEntryNode = new TreeNode(propStringId);
                 propEntryNode.Name = propStringId;
-                propEntryNode.Tag = associatedMesh; 
+                propEntryNode.Tag = associatedMesh;
                 propEntryNode.Checked = associatedMesh.Visible;
 
 
@@ -937,31 +937,39 @@ namespace Haven
         {
             if (propLeafNode == null || !(propLeafNode.Tag is Mesh)) return false;
 
-            if (TreeNodeGeomProps.Checked) return true;
+            
+            TreeNode? root = GetRootCategoryNode(propLeafNode);
+            if (root != TreeNodeGeomProps) return false;
 
-            TreeNode? parent1 = propLeafNode.Parent; 
-            TreeNode? parent2 = parent1?.Parent;    
-            TreeNode? parent3 = parent2?.Parent;    
-
-            if (parent1 != null && parent1.Text == "Other Props" && parent2 == TreeNodeGeomProps)
+            TreeNode? current = propLeafNode;
+            while (current != null)
             {
-
-                return parent1.Checked || (!parent1.Checked && propLeafNode.Checked);
-            }
-
-            if (parent3 == TreeNodeGeomProps && parent2 != null && parent1 != null)
-            {
-                TreeNode ruleCategoryNode = parent2;
-                TreeNode normalMiniNode = parent1;
-
-                if (ruleCategoryNode.Checked) return true;
-
-                if (normalMiniNode.Checked) return true;
-
-                if (propLeafNode.Checked) return true;
+                if (!current.Checked)
+                {
+                    return false; 
+                }
+                if (current == TreeNodeGeomProps)
+                {
+                    return true;
+                }
+                current = current.Parent;
             }
 
             return false;
+        }
+        private void PropagateCheckStateToChildren(TreeNode parentNode, bool isChecked)
+        {
+            foreach (TreeNode childNode in parentNode.Nodes)
+            {
+                if (childNode.Checked != isChecked)
+                {
+                    childNode.Checked = isChecked;
+                }
+                if (childNode.Nodes.Count > 0) 
+                {
+                    PropagateCheckStateToChildren(childNode, isChecked);
+                }
+            }
         }
 
         private void UpdateAllPropMeshVisibilities()
@@ -987,35 +995,40 @@ namespace Haven
             }
         }
 
-        private void UpdateParentVisualCheckState(TreeNode? parentNode)
+        private void UpdateNonPropMeshVisibilities(TreeNode? topLevelNode)
         {
-            if (parentNode == null || _isUpdatingTreeChecks) return;
+            if (topLevelNode == null) return;
 
-            bool originalUpdatingChecks = _isUpdatingTreeChecks;
+            Queue<TreeNode> nodesToVisit = new Queue<TreeNode>();
+            nodesToVisit.Enqueue(topLevelNode);
 
-            try
+            while (nodesToVisit.Count > 0)
             {
-                if (parentNode.Nodes.Count > 0)
+                TreeNode currentNode = nodesToVisit.Dequeue();
+
+                if (currentNode.Tag is Mesh mesh)
                 {
-                    bool anyChildChecked = parentNode.Nodes.Cast<TreeNode>().Any(n => n.Checked);
-                    if (parentNode.Checked != anyChildChecked)
-                    {
-                        _isUpdatingTreeChecks = true;
-                        parentNode.Checked = anyChildChecked;
-                    }
+                    mesh.Visible = currentNode.Checked;
+                }
+
+                foreach (TreeNode childNode in currentNode.Nodes)
+                {
+                    nodesToVisit.Enqueue(childNode);
                 }
             }
-            finally
-            {
-            
-                if (!originalUpdatingChecks && _isUpdatingTreeChecks && parentNode.Checked == parentNode.Nodes.Cast<TreeNode>().Any(n => n.Checked))
-                {
-                    _isUpdatingTreeChecks = false;
-                }
-                else if (parentNode.Checked != parentNode.Nodes.Cast<TreeNode>().Any(n => n.Checked) && _isUpdatingTreeChecks)
-                {
-                }
+        }
 
+        private void UpdateParentVisualCheckState(TreeNode? parentNode)
+        {
+            if (parentNode == null) return;
+
+            if (parentNode.Nodes.Count > 0)
+            {
+                bool anyChildChecked = parentNode.Nodes.Cast<TreeNode>().Any(n => n.Checked);
+                if (parentNode.Checked != anyChildChecked)
+                {
+                    parentNode.Checked = anyChildChecked;
+                }
             }
 
             if (parentNode.Parent != null)
@@ -1090,19 +1103,23 @@ namespace Haven
 
             try
             {
-                _isUpdatingTreeChecks = true; 
+                _isUpdatingTreeChecks = true;
 
-                if (e.Node.Tag is Mesh mesh && GetRootCategoryNode(e.Node) != TreeNodeGeomProps)
+                if (e.Node.Nodes.Count > 0) 
                 {
-                    mesh.Visible = e.Node.Checked;
+                    PropagateCheckStateToChildren(e.Node, e.Node.Checked);
                 }
-
-                UpdateAllPropMeshVisibilities();
 
                 if (e.Node.Parent != null)
                 {
                     UpdateParentVisualCheckState(e.Node.Parent);
                 }
+
+                UpdateNonPropMeshVisibilities(TreeNodeGeomMeshes);
+                UpdateNonPropMeshVisibilities(TreeNodeGeomRefs);
+                UpdateNonPropMeshVisibilities(TreeNodeGeomBoundaries);
+                UpdateAllPropMeshVisibilities();
+
             }
             finally
             {
@@ -1114,12 +1131,12 @@ namespace Haven
 
         private void UpdateParentNodeCheckState(TreeNode parentNode)
         {
-            if (parentNode == null || _isUpdatingTreeChecks) 
+            if (parentNode == null || _isUpdatingTreeChecks)
                 return;
 
             try
             {
-                _isUpdatingTreeChecks = true; 
+                _isUpdatingTreeChecks = true;
 
                 if (parentNode.Nodes.Count == 0)
                 {
@@ -1148,7 +1165,7 @@ namespace Haven
                     }
                     else
                     {
-                        newParentState = allChildrenChecked; 
+                        newParentState = allChildrenChecked;
                     }
 
                     if (parentNode.Checked != newParentState)
@@ -1455,22 +1472,25 @@ namespace Haven
                 {
                     treeViewGeom.SelectedNode = clickedNode;
 
-                  
-                    if (clickedNode.Tag is Mesh) 
-                        TreeNode? rootCategory = GetRootCategoryNode(clickedNode);
+                    TreeNode? rootCategory = null;
 
-                        if (rootCategory == TreeNodeGeomProps)
-                        {
-                            ContextMenuGeomProp.Show(treeViewGeom, e.Location);
-                        }
-                        else if (rootCategory == TreeNodeGeomMeshes || rootCategory == TreeNodeGeomRefs)
-                        {
-                            ContextMenuGeomMesh.Show(treeViewGeom, e.Location);
-                        }
+                    if (clickedNode.Tag is Mesh)
+                    {
+                        rootCategory = GetRootCategoryNode(clickedNode);
+                    }
+
+                    if (rootCategory == TreeNodeGeomProps)
+                    {
+                        ContextMenuGeomProp.Show(treeViewGeom, e.Location);
+                    }
+                    else if (rootCategory == TreeNodeGeomMeshes || rootCategory == TreeNodeGeomRefs)
+                    {
+                        ContextMenuGeomMesh.Show(treeViewGeom, e.Location);
                     }
                 }
             }
         }
+
 
         private void mGO2StageToolStripMenuItem_Click(object sender, EventArgs e)
         {

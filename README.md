@@ -18,6 +18,7 @@ A utility that allows you to edit stages for all games running on the MGS4 engin
 - Create patch files for MGO2 (.dci)
 - VLM merger
 - String hashing utility
+- Ability to provide Dictionary-alias definitions for unknown official strings
 
 ![image](https://github.com/user-attachments/assets/08b25fb4-5f23-4fd2-82c7-5f3d84dcfa94)
-
+![image](https://mgops3.com/havent.gif)
