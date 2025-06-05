@@ -39,6 +39,27 @@ namespace Haven
             Text = $"TxnEditor - {stageFile.Name}";
         }
 
+        public static int GetIndexDldEntryDump(int txnIndex, TxnFile txnFile, List<DciFile> dciFiles)
+        {
+            var indexInfo = txnFile.ImageInfo[txnIndex];
+            foreach (var dci in dciFiles)
+            {
+                foreach (var entry in dci.Entries)
+                {
+                    if (entry.Offset <= 1) continue;
+                    if (entry.Hash == indexInfo.TriId)
+                    {
+                        foreach (var alias in dci.Aliases[entry])
+                        {
+                            if (alias.TxnIndex == txnIndex)
+                                return alias.DldEntry;
+                        }
+                    }
+                }
+            }
+            return txnIndex;
+        }
+
         private int GetIndexDldEntry(int txnIndex)
         {
             var index = Txn.ImageInfo[txnIndex];
@@ -180,7 +201,7 @@ namespace Haven
                     MessageBox.Show($"....", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                else if (index2List.Count > 1) 
+                else if (index2List.Count > 1)
                 {
                     MessageBox.Show($"Multiple entires were found for this texture", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -348,7 +369,7 @@ namespace Haven
             Txn.Images.Add(newIndex);
             Txn.ImageInfo.Add(newIndex2);
 
-            AddRowTxnIndex(Txn.Images.Count-1);
+            AddRowTxnIndex(Txn.Images.Count - 1);
         }
 
         private void btnTxnDelete_Click(object sender, EventArgs e)
@@ -367,7 +388,7 @@ namespace Haven
 
             var safeobjs = new List<uint> { 0x9A9116, 0x9A53B7, 0x4AAF74, 0x4ADF14, 0x6D60FF };
 
-            if (safeobjs.Contains(index2.TexId)) 
+            if (safeobjs.Contains(index2.TexId))
                 return;
 
             bool[] deleted = new bool[] { false, false };

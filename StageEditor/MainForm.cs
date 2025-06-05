@@ -72,6 +72,9 @@ namespace Haven
             LoggerSink.NewLogHandler += LoggerSink_NewLogHandler;
         }
 
+        private ToolStripMenuItem texturesToolStripMenuItem;
+        private ToolStripMenuItem dumpAllTxnsToolStripMenuItem;
+
         private GeoPropCategoryInfo GetPropCategoryInfo(string propId)
         {
             // --- Race Mission (RACE) ---
@@ -97,9 +100,11 @@ namespace Haven
 
             // --- Bomb Mission (BOMB) ---
             if (propId.StartsWith("PRP_RES_MINI_BOMB_")) return new GeoPropCategoryInfo("BOMB", true);
+            if (propId.StartsWith("PRP_MINI_BOMB_SITE_")) return new GeoPropCategoryInfo("BOMB", true);
             if (propId.StartsWith("PRP_MINI_BOMB_TERMINAL_")) return new GeoPropCategoryInfo("BOMB", true);
             if (propId.StartsWith("PRP_MINI_BOMB_")) return new GeoPropCategoryInfo("BOMB", true);
             if (propId.StartsWith("PRP_RES_BOMB_")) return new GeoPropCategoryInfo("BOMB", false);
+            if (propId.StartsWith("PRP_BOMB_SITE_")) return new GeoPropCategoryInfo("BOMB", false);
             if (propId.StartsWith("PRP_BOMB_TGT_")) return new GeoPropCategoryInfo("BOMB", false);
             if (propId.StartsWith("PRP_BOMB_TERMINAL_")) return new GeoPropCategoryInfo("BOMB", false);
             if (propId.StartsWith("PRP_BOMB_")) return new GeoPropCategoryInfo("BOMB", false);
@@ -207,6 +212,75 @@ namespace Haven
 
             return GeoPropCategoryInfo.Default;
         }
+
+        private void DumpAllTxnsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CurrentStage == null)
+            {
+                MessageBox.Show("Please load a stage first.", "No Stage Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using var fbd = new FolderBrowserDialog();
+            if (fbd.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                return;
+
+            string folderPath = fbd.SelectedPath;
+            var textureData = new List<DldFile>();
+            var dciFilesList = new List<DciFile>();
+
+            foreach (var file in CurrentStage.Files)
+            {
+                if (file.Type == StageFile.FileType.DLZ)
+                {
+                    string dldPath = Path.Combine(file.GetUnpackedDir(), file.Name.Replace(".dlz", ".dld").Replace(".dec", ""));
+                    textureData.Add(new DldFile(dldPath));
+                }
+                else if (file.Type == StageFile.FileType.DCI)
+                {
+                    dciFilesList.Add(new DciFile(file.GetLocalPath()));
+                }
+            }
+
+            foreach (var file in CurrentStage.Files.Where(f => f.Type == StageFile.FileType.TXN))
+            {
+                var txnFile = new TxnFile(file.GetLocalPath());
+
+                for (int txnIndex = 0; txnIndex < txnFile.Images.Count; txnIndex++)
+                {
+                    DldTexture? texture = null;
+                    DldTexture? textureMips = null;
+                    uint objectId = txnFile.ImageInfo[txnIndex].TriId;
+                    int txnIndexUpdated = TxnEditor.GetIndexDldEntryDump(txnIndex, txnFile, dciFilesList);
+
+                    for (int i = textureData.Count - 1; i >= 0; i--)
+                    {
+                        var dld = textureData[i];
+                        texture ??= dld.FindTexture(objectId, txnIndexUpdated, DldPriority.Main);
+                        textureMips ??= dld.FindTexture(objectId, txnIndexUpdated, DldPriority.Mipmaps);
+                    }
+
+                    string filename = DictionaryFile.GetHashString(txnFile.ImageInfo[txnIndex].TexId);
+                    string fullDir = Path.Combine(folderPath, Path.GetFileNameWithoutExtension(txnFile.Path));
+
+                    if (!Directory.Exists(fullDir))
+                        Directory.CreateDirectory(fullDir);
+
+                    var txnInfoList = txnFile.GetIndex2List(txnIndex);
+                    bool hasMips = txnInfoList[0].Flag != 0xF0;
+
+                    if (texture == null && textureMips != null)
+                    {
+                        txnFile.CreateDdsFromIndex(Path.Combine(fullDir, $"{filename}.dds"), txnIndex, textureMips, null);
+                    }
+                    else
+                    {
+                        txnFile.CreateDdsFromIndex(Path.Combine(fullDir, $"{filename}.dds"), txnIndex, texture, textureMips);
+                    }
+                }
+            }
+        }
+
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -937,7 +1011,7 @@ namespace Haven
         {
             if (propLeafNode == null || !(propLeafNode.Tag is Mesh)) return false;
 
-            
+
             TreeNode? root = GetRootCategoryNode(propLeafNode);
             if (root != TreeNodeGeomProps) return false;
 
@@ -946,7 +1020,7 @@ namespace Haven
             {
                 if (!current.Checked)
                 {
-                    return false; 
+                    return false;
                 }
                 if (current == TreeNodeGeomProps)
                 {
@@ -965,7 +1039,7 @@ namespace Haven
                 {
                     childNode.Checked = isChecked;
                 }
-                if (childNode.Nodes.Count > 0) 
+                if (childNode.Nodes.Count > 0)
                 {
                     PropagateCheckStateToChildren(childNode, isChecked);
                 }
@@ -1105,7 +1179,7 @@ namespace Haven
             {
                 _isUpdatingTreeChecks = true;
 
-                if (e.Node.Nodes.Count > 0) 
+                if (e.Node.Nodes.Count > 0)
                 {
                     PropagateCheckStateToChildren(e.Node, e.Node.Checked);
                 }
