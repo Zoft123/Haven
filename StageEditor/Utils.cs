@@ -1,10 +1,11 @@
 ﻿using Haven.Parser;
 using Haven.TextureLoaders;
+using System.ComponentModel;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using ICSharpCode.SharpZipLib.Zip.Compression;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO.Compression;
 
 namespace Haven
 {

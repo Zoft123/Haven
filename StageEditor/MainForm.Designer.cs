@@ -53,6 +53,9 @@
             solidEyeToolStripMenuItem = new ToolStripMenuItem();
             encryptFileToolStripMenuItem = new ToolStripMenuItem();
             decryptFileToolStripMenuItem = new ToolStripMenuItem();
+	        this.texturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpAllTxnsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.repackAllTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripMenuItem1 = new ToolStripMenuItem();
             mergeToolStripMenuItem = new ToolStripMenuItem();
             mergeReferencesToolStripMenuItem = new ToolStripMenuItem();
@@ -286,7 +289,7 @@
             // 
             // toolStripDropDownButtonTools
             // 
-            toolStripDropDownButtonTools.DropDownItems.AddRange(new ToolStripItem[] { solidEyeToolStripMenuItem, toolStripMenuItem1, stringHashUtilityToolStripMenuItem });
+            toolStripDropDownButtonTools.DropDownItems.AddRange(new ToolStripItem[] { solidEyeToolStripMenuItem, this.texturesToolStripMenuItem, toolStripMenuItem1, stringHashUtilityToolStripMenuItem });
             toolStripDropDownButtonTools.Image = (Image)resources.GetObject("toolStripDropDownButtonTools.Image");
             toolStripDropDownButtonTools.ImageTransparentColor = Color.Magenta;
             toolStripDropDownButtonTools.Name = "toolStripDropDownButtonTools";
@@ -313,6 +316,29 @@
             decryptFileToolStripMenuItem.Size = new Size(274, 44);
             decryptFileToolStripMenuItem.Text = "Decrypt File";
             decryptFileToolStripMenuItem.Click += decryptFileToolStripMenuItem_Click;
+	        // 
+            // texturesToolStripMenuItem
+            // 
+            this.texturesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dumpAllTxnsToolStripMenuItem,
+            this.repackAllTexturesToolStripMenuItem});
+            this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
+            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.texturesToolStripMenuItem.Text = "Textures";
+            // 
+            // dumpAllTxnsToolStripMenuItem
+            // 
+            this.dumpAllTxnsToolStripMenuItem.Name = "dumpAllTxnsToolStripMenuItem";
+            this.dumpAllTxnsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dumpAllTxnsToolStripMenuItem.Text = "Dump All Textures";
+            this.dumpAllTxnsToolStripMenuItem.Click += new System.EventHandler(this.DumpAllTxnsToolStripMenuItem_Click);
+            // 
+            // repackAllTexturesToolStripMenuItem
+            // 
+            this.repackAllTexturesToolStripMenuItem.Name = "repackAllTexturesToolStripMenuItem";
+            this.repackAllTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.repackAllTexturesToolStripMenuItem.Text = "Repack All Textures";
+            this.repackAllTexturesToolStripMenuItem.Click += new System.EventHandler(this.RepackAllTexturesToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -458,5 +484,6 @@
         private TabPage tabPageLog;
         private TextBox tbLog;
         private CheckBox cbGrid;
+        private ToolStripMenuItem repackAllTexturesToolStripMenuItem;
     }
 }

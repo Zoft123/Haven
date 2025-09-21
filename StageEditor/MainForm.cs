@@ -49,6 +49,8 @@ namespace Haven
 
         private bool _suspendAfterCheck = false;
 
+
+
         public MainForm()
         {
             InitializeComponent();
@@ -67,6 +69,295 @@ namespace Haven
                 .CreateLogger();
 
             LoggerSink.NewLogHandler += LoggerSink_NewLogHandler;
+        }
+
+        private ToolStripMenuItem texturesToolStripMenuItem;
+        private ToolStripMenuItem dumpAllTxnsToolStripMenuItem;
+
+        private GeoPropCategoryInfo GetPropCategoryInfo(string propId)
+        {
+            // --- Race Mission (RACE) ---
+            if (propId.StartsWith("PRP_RES_01_MINI_RACE_HOME_") || propId.StartsWith("PRP_RES_02_MINI_RACE_HOME_") || propId.StartsWith("PRP_RES_03_MINI_RACE_HOME_") || propId.StartsWith("PRP_RES_04_MINI_RACE_HOME_"))
+                return new GeoPropCategoryInfo("RACE", true);
+            if (propId.StartsWith("PRP_MINI_RACE_HOME_")) return new GeoPropCategoryInfo("RACE", true);
+            if (propId.StartsWith("PRP_RES_01_MINI_RACE_BASE_") || propId.StartsWith("PRP_RES_02_MINI_RACE_BASE_") || propId.StartsWith("PRP_RES_03_MINI_RACE_BASE_") || propId.StartsWith("PRP_RES_04_MINI_RACE_BASE_"))
+                return new GeoPropCategoryInfo("RACE", true);
+            if (propId.StartsWith("PRP_MINI_RACE_BASE_")) return new GeoPropCategoryInfo("RACE", true);
+            if (propId.StartsWith("PRP_MINI_RACE_GOAL_")) return new GeoPropCategoryInfo("RACE", true);
+            if (propId.StartsWith("PRP_MINI_RACE_TGT_")) return new GeoPropCategoryInfo("RACE", true);
+            if (propId.StartsWith("PRP_MINI_RACE_A") || propId.StartsWith("PRP_MINI_RACE_B")) return new GeoPropCategoryInfo("RACE", true);
+
+            if (propId.StartsWith("PRP_RES_01_RACE_HOME_") || propId.StartsWith("PRP_RES_02_RACE_HOME_") || propId.StartsWith("PRP_RES_03_RACE_HOME_") || propId.StartsWith("PRP_RES_04_RACE_HOME_"))
+                return new GeoPropCategoryInfo("RACE", false);
+            if (propId.StartsWith("PRP_RACE_HOME_")) return new GeoPropCategoryInfo("RACE", false);
+            if (propId.StartsWith("PRP_RES_01_RACE_BASE_") || propId.StartsWith("PRP_RES_02_RACE_BASE_") || propId.StartsWith("PRP_RES_03_RACE_BASE_") || propId.StartsWith("PRP_RES_04_RACE_BASE_"))
+                return new GeoPropCategoryInfo("RACE", false);
+            if (propId.StartsWith("PRP_RACE_BASE_")) return new GeoPropCategoryInfo("RACE", false);
+            if (propId.StartsWith("PRP_RACE_TGT_")) return new GeoPropCategoryInfo("RACE", false);
+            if (propId.StartsWith("PRP_RACE_A") || propId.StartsWith("PRP_RACE_B")) return new GeoPropCategoryInfo("RACE", false);
+            if (propId.StartsWith("PRP_RACE_")) return new GeoPropCategoryInfo("RACE", false);
+
+            // --- Bomb Mission (BOMB) ---
+            if (propId.StartsWith("PRP_RES_MINI_BOMB_")) return new GeoPropCategoryInfo("BOMB", true);
+            if (propId.StartsWith("PRP_MINI_BOMB_SITE_")) return new GeoPropCategoryInfo("BOMB", true);
+            if (propId.StartsWith("PRP_MINI_BOMB_TERMINAL_")) return new GeoPropCategoryInfo("BOMB", true);
+            if (propId.StartsWith("PRP_MINI_BOMB_")) return new GeoPropCategoryInfo("BOMB", true);
+            if (propId.StartsWith("PRP_RES_BOMB_")) return new GeoPropCategoryInfo("BOMB", false);
+            if (propId.StartsWith("PRP_BOMB_SITE_")) return new GeoPropCategoryInfo("BOMB", false);
+            if (propId.StartsWith("PRP_BOMB_TGT_")) return new GeoPropCategoryInfo("BOMB", false);
+            if (propId.StartsWith("PRP_BOMB_TERMINAL_")) return new GeoPropCategoryInfo("BOMB", false);
+            if (propId.StartsWith("PRP_BOMB_")) return new GeoPropCategoryInfo("BOMB", false);
+
+            // --- Team Sneaking Mission (TSNE) ---
+            if (propId.StartsWith("PRP_MINI_TEAM_SNEAKING_GOAL_")) return new GeoPropCategoryInfo("TSNE", true);
+            if (propId.StartsWith("PRP_MINI_TEAM_SNEAKING_TGT_")) return new GeoPropCategoryInfo("TSNE", true);
+            if (propId.StartsWith("PRP_MINI_TEAM_SNEAKING_")) return new GeoPropCategoryInfo("TSNE", true);
+            if (propId.StartsWith("PRP_TEAM_SNEAKING_GOAL_")) return new GeoPropCategoryInfo("TSNE", false);
+            if (propId.StartsWith("PRP_TEAM_SNEAKING_TGT_")) return new GeoPropCategoryInfo("TSNE", false);
+            if (propId.StartsWith("PRP_TEAM_SNEAKING_")) return new GeoPropCategoryInfo("TSNE", false);
+
+            // --- Stealth Deathmatch Mission (SDM) ---
+            if (propId.StartsWith("PRP_SDM_CIRCLE_")) return new GeoPropCategoryInfo("SDM", false);
+            if (propId.StartsWith("PRP_MINI_SDM_")) return new GeoPropCategoryInfo("SDM", true);
+            if (propId.StartsWith("PRP_SDM_")) return new GeoPropCategoryInfo("SDM", false);
+
+            // --- Solo Capture Mission (SCAP) ---
+            if (propId.StartsWith("PRP_MINI_SCAP_TERMINAL")) return new GeoPropCategoryInfo("SCAP", true);
+            if (propId.StartsWith("PRP_MINI_SCAP_")) return new GeoPropCategoryInfo("SCAP", true);
+            if (propId.StartsWith("PRP_SCAP_TGT_")) return new GeoPropCategoryInfo("SCAP", false);
+            if (propId.StartsWith("PRP_SCAP_TERMINAL")) return new GeoPropCategoryInfo("SCAP", false);
+            if (propId.StartsWith("PRP_SCAP_")) return new GeoPropCategoryInfo("SCAP", false);
+
+            // --- Rugby Mission (RUG) ---
+            if (propId.StartsWith("PRP_RES_MINI_RUGBY_")) return new GeoPropCategoryInfo("CAP", true);
+            if (propId.StartsWith("PRP_MINI_CAP_TERMINAL_")) return new GeoPropCategoryInfo("CAP", true);
+            if (propId.StartsWith("PRP_MINI_RUGBY_")) return new GeoPropCategoryInfo("CAP", true);
+            if (propId.StartsWith("PRP_RES_RUGBY_")) return new GeoPropCategoryInfo("CAP", false);
+            if (propId.StartsWith("PRP_RUGBY_GOAL_")) return new GeoPropCategoryInfo("CAP", false);
+            if (propId.StartsWith("PRP_RUGBY_TGT_")) return new GeoPropCategoryInfo("CAP", false);
+            if (propId.StartsWith("PRP_CAP_TERMINAL_")) return new GeoPropCategoryInfo("CAP", false);
+            if (propId.StartsWith("PRP_RUGBY_")) return new GeoPropCategoryInfo("CAP", false);
+
+            // --- Team Deathmatch (TDM) ---
+            if (propId.StartsWith("PRP_RES_MINI_TEAM_DEATHMATCH_")) return new GeoPropCategoryInfo("TDM", true);
+            if (propId.StartsWith("PRP_MINI_TEAM_DEATHMATCH_")) return new GeoPropCategoryInfo("TDM", true);
+            if (propId.StartsWith("PRP_RES_TEAM_DEATHMATCH_")) return new GeoPropCategoryInfo("TDM", false);
+            if (propId.StartsWith("PRP_TEAM_DEATHMATCH_")) return new GeoPropCategoryInfo("TDM", false);
+
+            // --- Deathmatch (DM) ---
+            if (propId.StartsWith("PRP_MINI_DM_TERMINAL")) return new GeoPropCategoryInfo("DM", true);
+            if (propId.StartsWith("PRP_MINI_DEATHMATCH_")) return new GeoPropCategoryInfo("DM", true);
+            if (propId.StartsWith("PRP_DM_TERMINAL")) return new GeoPropCategoryInfo("DM", false);
+            if (propId.StartsWith("PRP_DEATHMATCH_")) return new GeoPropCategoryInfo("DM", false);
+
+            // --- Rescue Mission (RES Mission) ---
+            if (propId.StartsWith("PRP_MINI_RESCUE_")) return new GeoPropCategoryInfo("RES", true);
+            if (propId.StartsWith("PRP_MINI_RES_A") || propId.StartsWith("PRP_MINI_RES_B")) return new GeoPropCategoryInfo("RES", true);
+            if (propId.StartsWith("PRP_RESCUE_")) return new GeoPropCategoryInfo("RES", false);
+            if (propId.StartsWith("PRP_RES_GOAL_")) return new GeoPropCategoryInfo("RES", false);
+            if (propId.StartsWith("PRP_RES_A") || propId.StartsWith("PRP_RES_B")) return new GeoPropCategoryInfo("RES", false);
+            if (propId.StartsWith("PRP_RES_TGT_00")) return new GeoPropCategoryInfo("RES", false);
+            if (propId.StartsWith("PRP_RES_TGT_01")) return new GeoPropCategoryInfo("RES", true);
+
+            // --- Training Mission (TRA Mission) ---
+            if (propId.StartsWith("PRP_TRAINING_")) return new GeoPropCategoryInfo("TRAIN", false);
+            if (propId.StartsWith("PRP_DOLL_")) return new GeoPropCategoryInfo("TRAIN", false);
+            if (propId.StartsWith("PRP_SLEEP_")) return new GeoPropCategoryInfo("TRAIN", false);
+            if (propId.StartsWith("PRP_CLAYMORE_")) return new GeoPropCategoryInfo("TRAIN", false);
+            if (propId.StartsWith("PRP_RES_TRAINING_")) return new GeoPropCategoryInfo("TRAIN", false);
+            if (propId.StartsWith("PRP_MINI_TRAINING_")) return new GeoPropCategoryInfo("TRAIN", true);
+            if (propId.StartsWith("PRP_RES_MINI_TRAINING_")) return new GeoPropCategoryInfo("TRAIN", true);
+
+            // --- Explosive Barrel ---
+            if (propId.StartsWith("PRP_EXP_BARREL_")) return new GeoPropCategoryInfo("Explosive Barrel", false);
+
+
+            // --- Sneaking Mission (SNE Mission) ---
+            if (propId.StartsWith("PRP_SNEAKING_")) return new GeoPropCategoryInfo("SNE", false);
+            if (propId.StartsWith("PRP_MINI_SNEAKING_")) return new GeoPropCategoryInfo("SNE", true);
+
+
+            // --- Combat Training (CBT Mission) ---
+            if (propId.StartsWith("PRP_CBTRAIN_")) return new GeoPropCategoryInfo("CBTRAIN", false);
+            if (propId.StartsWith("PRP_RES_CBTRAIN_")) return new GeoPropCategoryInfo("CBTRAIN", false);
+            if (propId.StartsWith("PRP_COMBAT_TRAINING_")) return new GeoPropCategoryInfo("CBTRAIN", false);
+            if (propId.StartsWith("PRP_RES_COMBAT_TRAINING_")) return new GeoPropCategoryInfo("CBTRAIN", false);
+            if (propId.StartsWith("PRP_MINI_COMBAT_TRAINING_")) return new GeoPropCategoryInfo("CBTRAIN", true);
+            if (propId.StartsWith("PRP_RES_MINI_COMBAT_TRAINING_")) return new GeoPropCategoryInfo("CBTRAIN", true);
+
+            // --- Cardboard Boxes (CBOX) ---
+            if (propId.StartsWith("PRP_CBOX_")) return new GeoPropCategoryInfo("CBOX", false);
+            if (propId.StartsWith("PRP_MINI_CBOX_")) return new GeoPropCategoryInfo("CBOX", true);
+
+            // --- Base Mission (BASE) ---
+            if (propId.StartsWith("PRP_RES_01_MINI_BASE_HOME_") || propId.StartsWith("PRP_RES_02_MINI_BASE_HOME_") || propId.StartsWith("PRP_RES_03_MINI_BASE_HOME_") || propId.StartsWith("PRP_RES_04_MINI_BASE_HOME_"))
+                return new GeoPropCategoryInfo("BASE", true);
+
+            if (propId.StartsWith("PRP_MINI_BASE_HOME_")) return new GeoPropCategoryInfo("BASE", true);
+
+            if (propId.StartsWith("PRP_RES_01_MINI_BASE_") || propId.StartsWith("PRP_RES_02_MINI_BASE_") || propId.StartsWith("PRP_RES_03_MINI_BASE_") || propId.StartsWith("PRP_RES_04_MINI_BASE_"))
+                return new GeoPropCategoryInfo("BASE", true);
+
+            if (propId.StartsWith("PRP_MINI_BASE_A") || propId.StartsWith("PRP_MINI_BASE_B")) return new GeoPropCategoryInfo("BASE", true);
+            if (propId.StartsWith("PRP_MINI_BASE_")) return new GeoPropCategoryInfo("BASE", true);
+
+            if (propId.StartsWith("PRP_RES_01_BASE_HOME_") || propId.StartsWith("PRP_RES_02_BASE_HOME_") || propId.StartsWith("PRP_RES_03_BASE_HOME_") || propId.StartsWith("PRP_RES_04_BASE_HOME_"))
+                return new GeoPropCategoryInfo("BASE", false);
+            if (propId.StartsWith("PRP_BASE_HOME_")) return new GeoPropCategoryInfo("BASE", false);
+            if (propId.StartsWith("PRP_RES_01_BASE_") || propId.StartsWith("PRP_RES_02_BASE_") || propId.StartsWith("PRP_RES_03_BASE_") || propId.StartsWith("PRP_RES_04_BASE_"))
+                return new GeoPropCategoryInfo("BASE", false);
+            if (propId.StartsWith("PRP_BASE_A") || propId.StartsWith("PRP_BASE_B")) return new GeoPropCategoryInfo("BASE", false);
+            if (propId.StartsWith("PRP_BASE_")) return new GeoPropCategoryInfo("BASE", false);
+
+            return GeoPropCategoryInfo.Default;
+        }
+
+        private void RepackAllTexturesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CurrentStage == null)
+            {
+                MessageBox.Show("Please load a stage first.", "No Stage Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DldFile? cache = null;
+            DldFile? cacheMips = null;
+
+            using (var dldSelector = new DldSelector(CurrentStage))
+            {
+                if (dldSelector.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                if (string.IsNullOrEmpty(dldSelector.FilenameMain) || string.IsNullOrEmpty(dldSelector.FilenameMips))
+                {
+                    MessageBox.Show("You must select both a main and mips DLZ.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                try
+                {
+                    cache = new DldFile(Path.Combine("stage", "_dlz", dldSelector.FilenameMain.Replace(".dlz", ".dld")));
+                    cacheMips = new DldFile(Path.Combine("stage", "_dlz", dldSelector.FilenameMips.Replace(".dlz", ".dld")));
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to load DLD files.");
+                    MessageBox.Show($"Error loading DLD files: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            string? rootDdsPath = null;
+            using (var fbd = new FolderBrowserDialog())
+            {
+                fbd.Description = "Select the root folder containing the texture subfolders (named after the .txn files)";
+                if (fbd.ShowDialog(this) != DialogResult.OK || string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    return;
+
+                rootDdsPath = fbd.SelectedPath;
+            }
+
+            Log.Information("Starting batch repack of all TXN files...");
+            int repackedCount = 0;
+            int skippedCount = 0;
+
+            var txnFiles = CurrentStage.Files.Where(f => f.Type == StageFile.FileType.TXN).ToList();
+
+            foreach (var txnFile in txnFiles)
+            {
+                string txnNameWithoutExt = Path.GetFileNameWithoutExtension(txnFile.Name);
+                string ddsSubFolderPath = Path.Combine(rootDdsPath, txnNameWithoutExt);
+
+                if (Directory.Exists(ddsSubFolderPath))
+                {
+                    Log.Information($"Repacking textures for '{txnFile.Name}' from '{ddsSubFolderPath}'");
+                    try
+                    {
+                        Utils.RebuildTXN(ddsSubFolderPath, cache, cacheMips, txnFile.GetLocalPath());
+                        repackedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, $"Failed to repack {txnFile.Name}.");
+                    }
+                }
+                else
+                {
+                    Log.Warning($"Skipping '{txnFile.Name}': Subfolder '{ddsSubFolderPath}' not found.");
+                    skippedCount++;
+                }
+            }
+
+            Log.Information("Batch repack finished.");
+            MessageBox.Show($"Repacking complete.\n\nRepacked: {repackedCount} TXN file(s)\nSkipped: {skippedCount} TXN file(s)", "Finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void DumpAllTxnsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CurrentStage == null)
+            {
+                MessageBox.Show("Please load a stage first.", "No Stage Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using var fbd = new FolderBrowserDialog();
+            if (fbd.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                return;
+
+            string folderPath = fbd.SelectedPath;
+            var textureData = new List<DldFile>();
+            var dciFilesList = new List<DciFile>();
+
+            foreach (var file in CurrentStage.Files)
+            {
+                if (file.Type == StageFile.FileType.DLZ)
+                {
+                    string dldPath = Path.Combine(file.GetUnpackedDir(), file.Name.Replace(".dlz", ".dld").Replace(".dec", ""));
+                    textureData.Add(new DldFile(dldPath));
+                }
+                else if (file.Type == StageFile.FileType.DCI)
+                {
+                    dciFilesList.Add(new DciFile(file.GetLocalPath()));
+                }
+            }
+
+            foreach (var file in CurrentStage.Files.Where(f => f.Type == StageFile.FileType.TXN))
+            {
+                var txnFile = new TxnFile(file.GetLocalPath());
+
+                for (int txnIndex = 0; txnIndex < txnFile.Images.Count; txnIndex++)
+                {
+                    DldTexture? texture = null;
+                    DldTexture? textureMips = null;
+                    uint objectId = txnFile.ImageInfo[txnIndex].TriId;
+                    int txnIndexUpdated = TxnEditor.GetIndexDldEntryDump(txnIndex, txnFile, dciFilesList);
+
+                    for (int i = textureData.Count - 1; i >= 0; i--)
+                    {
+                        var dld = textureData[i];
+                        texture ??= dld.FindTexture(objectId, txnIndexUpdated, DldPriority.Main);
+                        textureMips ??= dld.FindTexture(objectId, txnIndexUpdated, DldPriority.Mipmaps);
+                    }
+
+                    string filename = DictionaryFile.GetHashString(txnFile.ImageInfo[txnIndex].TexId);
+                    string fullDir = Path.Combine(folderPath, Path.GetFileNameWithoutExtension(txnFile.Path));
+
+                    if (!Directory.Exists(fullDir))
+                        Directory.CreateDirectory(fullDir);
+
+                    var txnInfoList = txnFile.GetIndex2List(txnIndex);
+                    bool hasMips = txnInfoList[0].Flag != 0xF0;
+
+                    if (texture == null && textureMips != null)
+                    {
+                        txnFile.CreateDdsFromIndex(Path.Combine(fullDir, $"{filename}.dds"), txnIndex, textureMips, null);
+                    }
+                    else
+                    {
+                        txnFile.CreateDdsFromIndex(Path.Combine(fullDir, $"{filename}.dds"), txnIndex, texture, textureMips);
+                    }
+                }
+            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -383,6 +674,8 @@ namespace Haven
                     var high = new Vector4();
 
                     Geom.GetWorldBoundary(ref low, ref high);
+
+
                     Scene.UpdateGridProperties(low, high);
                 }
 
@@ -469,70 +762,177 @@ namespace Haven
 
         private void PopulateGeomTreeView(string text)
         {
-            if (Geom == null) return;
+            if (Geom == null)
+                return;
 
             _suspendAfterCheck = true;
             treeViewGeom.Enabled = false;
             treeViewGeom.BeginUpdate();
 
-            text = text.ToLower();
+            string filterTextLower = text.ToLower();
+
+            // Reset lookups
             GeomPropLookup.Clear();
             TreeNodeLookup.Clear();
 
+            // ----------------------
             // 1) MeshGroups
+            // ----------------------
             TreeNodeGeomMeshes.Nodes.Clear();
-            foreach (var mesh in MeshGroups.OrderBy(m => m.ID))
+            foreach (var mesh in MeshGroups.OrderBy(x => x.ID))
             {
-                if (!mesh.ID.ToLower().Contains(text)) continue;
-                var tn = TreeNodeGeomMeshes.Nodes.Add(mesh.ID);
-                tn.Checked = true;
-                tn.Tag = mesh;
-                TreeNodeLookup[mesh.ID] = tn;
-            }
-
-            // 2) MeshRefs
-            TreeNodeGeomRefs.Nodes.Clear();
-            foreach (var mesh in MeshRefs.OrderBy(m => m.ID))
-            {
-                if (!mesh.ID.ToLower().Contains(text)) continue;
-                var tn = TreeNodeGeomRefs.Nodes.Add(mesh.ID);
-                tn.Checked = false;
-                tn.Tag = mesh;
-                TreeNodeLookup[mesh.ID] = tn;
-            }
-
-            // 3) MeshBoundaries
-            TreeNodeGeomBoundaries.Nodes.Clear();
-            foreach (var mesh in MeshBoundaries.OrderBy(m => m.ID))
-            {
-                if (!mesh.ID.ToLower().Contains(text)) continue;
-                var tn = TreeNodeGeomBoundaries.Nodes.Add(mesh.ID);
-                tn.Checked = false;
-                tn.Tag = mesh;
-                TreeNodeLookup[mesh.ID] = tn;
-            }
-
-            // 4) GeomProps
-            TreeNodeGeomProps.Nodes.Clear();
-            foreach (var prop in Geom.GeomProps
-                                     .OrderBy(p => DictionaryFile.GetHashString(p.Hash)))
-            {
-                if (!GeomPropMeshLookup.TryGetValue(prop, out var mesh) ||
-                    mesh == null ||
-                    !mesh.ID.ToLower().Contains(text))
+                if (!mesh.ID.ToLower().Contains(filterTextLower))
                     continue;
 
-                var tn = TreeNodeGeomProps.Nodes.Add(mesh.ID);
-                tn.Checked = false;
-                tn.Tag = mesh;
-                TreeNodeLookup[mesh.ID] = tn;
-                GeomPropLookup[tn] = prop;
+                var node = TreeNodeGeomMeshes.Nodes.Add(mesh.ID);
+                node.Name = mesh.ID;
+                node.Checked = mesh.Visible;   // ✅ keep actual visibility
+                node.Tag = mesh;
+                TreeNodeLookup[mesh.ID] = node;
+            }
+
+            // ----------------------
+            // 2) MeshRefs
+            // ----------------------
+            TreeNodeGeomRefs.Nodes.Clear();
+            foreach (var mesh in MeshRefs.OrderBy(x => x.ID))
+            {
+                if (!mesh.ID.ToLower().Contains(filterTextLower))
+                    continue;
+
+                var node = TreeNodeGeomRefs.Nodes.Add(mesh.ID);
+                node.Name = mesh.ID;
+                node.Checked = mesh.Visible;   // ✅ keep actual visibility
+                node.Tag = mesh;
+                TreeNodeLookup[mesh.ID] = node;
+            }
+
+            // ----------------------
+            // 3) MeshBoundaries
+            // ----------------------
+            TreeNodeGeomBoundaries.Nodes.Clear();
+            foreach (var mesh in MeshBoundaries.OrderBy(x => x.ID))
+            {
+                if (!mesh.ID.ToLower().Contains(filterTextLower))
+                    continue;
+
+                var node = TreeNodeGeomBoundaries.Nodes.Add(mesh.ID);
+                node.Name = mesh.ID;
+                node.Checked = mesh.Visible;   // ✅ keep actual visibility
+                node.Tag = mesh;
+                TreeNodeLookup[mesh.ID] = node;
+            }
+
+            // ----------------------
+            // 4) GeomProps with categorization (from first version)
+            // ----------------------
+            TreeNodeGeomProps.Nodes.Clear();
+
+            var categorizedRuleProps = new Dictionary<string, Dictionary<bool, List<TreeNode>>>();
+            var otherPropsList = new List<TreeNode>();
+
+            var allSortedGeomProps = Geom.GeomProps
+                .Select(p => new { Prop = p, MeshID = DictionaryFile.GetHashString(p.Hash) })
+                .OrderBy(pInfo => pInfo.MeshID)
+                .ToList();
+
+            foreach (var propInfo in allSortedGeomProps)
+            {
+                GeomProp prop = propInfo.Prop;
+                string propStringId = propInfo.MeshID;
+
+                if (!GeomPropMeshLookup.TryGetValue(prop, out Mesh? associatedMesh))
+                    continue;
+
+                if (!propStringId.ToLower().Contains(filterTextLower))
+                    continue;
+
+                TreeNode propEntryNode = new TreeNode(propStringId);
+                propEntryNode.Name = propStringId;
+                propEntryNode.Tag = associatedMesh;
+                propEntryNode.Checked = associatedMesh.Visible;   // ✅ keep actual visibility
+
+                TreeNodeLookup[propStringId] = propEntryNode;
+                GeomPropLookup[propEntryNode] = prop;
+
+                GeoPropCategoryInfo catInfo = GetPropCategoryInfo(propStringId);
+
+                if (catInfo.CategoryName == "Other Props")
+                {
+                    otherPropsList.Add(propEntryNode);
+                }
+                else
+                {
+                    if (!categorizedRuleProps.TryGetValue(catInfo.CategoryName, out var subCategories))
+                    {
+                        subCategories = new Dictionary<bool, List<TreeNode>>();
+                        categorizedRuleProps[catInfo.CategoryName] = subCategories;
+                    }
+                    if (!subCategories.TryGetValue(catInfo.IsMini, out var specificPropList))
+                    {
+                        specificPropList = new List<TreeNode>();
+                        subCategories[catInfo.IsMini] = specificPropList;
+                    }
+                    specificPropList.Add(propEntryNode);
+                }
+            }
+
+            var sortedRuleCategoryNames = categorizedRuleProps.Keys.OrderBy(name => name).ToList();
+
+            foreach (string categoryName in sortedRuleCategoryNames)
+            {
+                var subCategories = categorizedRuleProps[categoryName];
+                TreeNode ruleParentNode = new TreeNode(categoryName + " Props");
+                TreeNodeGeomProps.Nodes.Add(ruleParentNode);
+
+                if (subCategories.TryGetValue(false, out var normalPropsList) && normalPropsList.Count > 0)
+                {
+                    TreeNode normalCategoryNode = new TreeNode("Main");
+                    ruleParentNode.Nodes.Add(normalCategoryNode);
+
+                    normalCategoryNode.Nodes.AddRange(normalPropsList.ToArray());
+                }
+
+                if (subCategories.TryGetValue(true, out var miniPropsList) && miniPropsList.Count > 0)
+                {
+                    TreeNode miniCategoryNode = new TreeNode("Mini");
+                    ruleParentNode.Nodes.Add(miniCategoryNode);
+                    miniCategoryNode.Nodes.AddRange(miniPropsList.ToArray());
+                }
+            }
+
+            if (otherPropsList.Count > 0)
+            {
+                TreeNode otherPropsParentNode = new TreeNode("Other Props");
+                TreeNodeGeomProps.Nodes.Add(otherPropsParentNode);
+                otherPropsParentNode.Nodes.AddRange(otherPropsList.ToArray());
+            }
+
+            // Ensure "Other Props" always last
+            var topLevelPropNodes = TreeNodeGeomProps.Nodes.Cast<TreeNode>().ToList();
+            TreeNode? otherNodeGlobal = topLevelPropNodes.FirstOrDefault(n => n.Text == "Other Props");
+            List<TreeNode> sortedTopLevelPropNodes = new List<TreeNode>();
+
+            if (otherNodeGlobal != null)
+                topLevelPropNodes.Remove(otherNodeGlobal);
+
+            sortedTopLevelPropNodes.AddRange(topLevelPropNodes.OrderBy(n => n.Text));
+
+            if (otherNodeGlobal != null)
+                sortedTopLevelPropNodes.Add(otherNodeGlobal);
+
+            if (!TreeNodeGeomProps.Nodes.Cast<TreeNode>().SequenceEqual(sortedTopLevelPropNodes))
+            {
+                TreeNodeGeomProps.Nodes.Clear();
+                TreeNodeGeomProps.Nodes.AddRange(sortedTopLevelPropNodes.ToArray());
             }
 
             treeViewGeom.EndUpdate();
             treeViewGeom.Enabled = true;
             _suspendAfterCheck = false;
         }
+
+
 
         private async void PromptStageLoad(Stage.GameType game)
         {
@@ -710,64 +1110,192 @@ namespace Haven
         {
         }
 
+        private bool CalculatePropVisibility(TreeNode propLeafNode)
+        {
+            if (propLeafNode == null || !(propLeafNode.Tag is Mesh)) return false;
+
+
+            TreeNode? root = GetRootCategoryNode(propLeafNode);
+            if (root != TreeNodeGeomProps) return false;
+
+            TreeNode? current = propLeafNode;
+            while (current != null)
+            {
+                if (!current.Checked)
+                {
+                    return false;
+                }
+                if (current == TreeNodeGeomProps)
+                {
+                    return true;
+                }
+                current = current.Parent;
+            }
+
+            return false;
+        }
+        private void PropagateCheckStateToChildren(TreeNode parentNode, bool isChecked)
+        {
+            foreach (TreeNode childNode in parentNode.Nodes)
+            {
+                if (childNode.Checked != isChecked)
+                {
+                    childNode.Checked = isChecked;
+                }
+                if (childNode.Nodes.Count > 0)
+                {
+                    PropagateCheckStateToChildren(childNode, isChecked);
+                }
+            }
+        }
+
+        private void UpdateAllPropMeshVisibilities()
+        {
+            if (TreeNodeGeomProps == null || Geom == null || Geom.GeomProps == null) return;
+
+            Queue<TreeNode> nodesToVisit = new Queue<TreeNode>();
+            nodesToVisit.Enqueue(TreeNodeGeomProps);
+
+            while (nodesToVisit.Count > 0)
+            {
+                TreeNode currentNode = nodesToVisit.Dequeue();
+                foreach (TreeNode childNode in currentNode.Nodes)
+                {
+                    nodesToVisit.Enqueue(childNode);
+                }
+
+                // If the current node is a leaf prop node
+                if (currentNode.Tag is Mesh propMesh && GetRootCategoryNode(currentNode) == TreeNodeGeomProps)
+                {
+                    propMesh.Visible = CalculatePropVisibility(currentNode);
+                }
+            }
+        }
+
+        private void UpdateNonPropMeshVisibilities(TreeNode? topLevelNode)
+        {
+            if (topLevelNode == null) return;
+
+            Queue<TreeNode> nodesToVisit = new Queue<TreeNode>();
+            nodesToVisit.Enqueue(topLevelNode);
+
+            while (nodesToVisit.Count > 0)
+            {
+                TreeNode currentNode = nodesToVisit.Dequeue();
+
+                if (currentNode.Tag is Mesh mesh)
+                {
+                    mesh.Visible = currentNode.Checked;
+                }
+
+                foreach (TreeNode childNode in currentNode.Nodes)
+                {
+                    nodesToVisit.Enqueue(childNode);
+                }
+            }
+        }
+
+        private void UpdateParentVisualCheckState(TreeNode? parentNode)
+        {
+            if (parentNode == null) return;
+
+            if (parentNode.Nodes.Count > 0)
+            {
+                bool anyChildChecked = parentNode.Nodes.Cast<TreeNode>().Any(n => n.Checked);
+                if (parentNode.Checked != anyChildChecked)
+                {
+                    parentNode.Checked = anyChildChecked;
+                }
+            }
+
+            if (parentNode.Parent != null)
+            {
+                UpdateParentVisualCheckState(parentNode.Parent);
+            }
+        }
+
         private void treeViewGeom_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            var parent = e.Node.Parent;
-
-            if (parent == null)
+            if (e.Node == null)
                 return;
 
-            if (parent == TreeNodeGeomMeshes || parent == TreeNodeGeomRefs || parent == TreeNodeGeomProps)
+            if (e.Node.Tag is Mesh mesh)
             {
-                var mesh = Mesh.FromID(e.Node.Text);
 
-                if (mesh == null)
-                    return;
+                TreeNode? rootCategory = GetRootCategoryNode(e.Node);
 
-                if (parent == TreeNodeGeomProps)
+                if (rootCategory != null)
                 {
-                    Scene.Camera.Position = mesh.AABB.TransformedCenter;
-                }
-                else
-                {
-                    Scene.Camera.Position = mesh.Vertices[0];
-                }
+                    bool cameraMoved = false;
+                    if (rootCategory == TreeNodeGeomProps)
+                    {
+                        Scene.Camera.Position = mesh.AABB.TransformedCenter;
+                        cameraMoved = true;
+                    }
+                    else if (rootCategory == TreeNodeGeomMeshes || rootCategory == TreeNodeGeomRefs)
+                    {
+                        if (mesh.Vertices != null && mesh.Vertices.Count() > 0)
+                        {
+                            Scene.Camera.Position = mesh.Vertices[0];
+                        }
+                        else
+                        {
+                            Scene.Camera.Position = mesh.AABB.TransformedCenter;
+                        }
+                        cameraMoved = true;
+                    }
+                    else if (rootCategory == TreeNodeGeomBoundaries)
+                    {
+                        Scene.Camera.Position = mesh.AABB.TransformedCenter;
+                        cameraMoved = true;
+                    }
 
-                Scene.SelectMesh(mesh);
-                Scene.Render();
+                    Scene.SelectMesh(mesh);
+
+                    if (cameraMoved)
+                    {
+                        Scene.Render();
+                    }
+                    else
+                    {
+                        Scene.Render();
+                    }
+                }
             }
         }
 
-        private void treeViewGeom_BeforeCheck(object sender, TreeViewCancelEventArgs e)
+        private bool _isUpdatingTreeChecks = false;
+
+private void treeViewGeom_BeforeCheck(object sender, TreeViewCancelEventArgs e)
+{
+    if (_suspendAfterCheck) return;
+
+    if (e.Node == TreeNodeGeomMeshes ||
+        e.Node == TreeNodeGeomRefs ||
+        e.Node == TreeNodeGeomProps ||
+        e.Node == TreeNodeGeomBoundaries)
+    {
+        e.Cancel = true;
+        bool newState = !e.Node.Checked;
+
+        _suspendAfterCheck = true;
+
+
+        e.Node.Checked = newState;
+
+        foreach (TreeNode child in e.Node.Nodes)
         {
-            if (_suspendAfterCheck) return;
-
-            if (e.Node == TreeNodeGeomMeshes ||
-                e.Node == TreeNodeGeomRefs ||
-                e.Node == TreeNodeGeomProps ||
-                e.Node == TreeNodeGeomBoundaries)
-            {
-                e.Cancel = true;
-                bool newState = !e.Node.Checked;
-
-                _suspendAfterCheck = true;
-
-
-                e.Node.Checked = newState;
-
-                foreach (TreeNode child in e.Node.Nodes)
-                {
-                    child.Checked = newState;
-                    if (child.Tag is Mesh m)
-                        m.Visible = newState;
-                }
-
-                _suspendAfterCheck = false;
-
-                treeViewGeom.SelectedNode = null;
-                Scene.Render();
-            }
+            child.Checked = newState;
+            if (child.Tag is Mesh m)
+                m.Visible = newState;
         }
+
+        _suspendAfterCheck = false;
+
+        treeViewGeom.SelectedNode = null;
+        Scene.Render();
+    }
+}
 
 
         private void treeViewGeom_AfterCheck(object sender, TreeViewEventArgs e)
@@ -775,11 +1303,109 @@ namespace Haven
             if (_suspendAfterCheck || e.Action == TreeViewAction.Unknown || e.Node == null)
                 return;
 
-            if (e.Node.Tag is Mesh mesh)
+            if (_isUpdatingTreeChecks)
+                return;
+
+            try
             {
-                mesh.Visible = e.Node.Checked;
-                Scene.Render();
+                _isUpdatingTreeChecks = true;
+
+                if (e.Node.Tag is Mesh mesh)
+                {
+                    mesh.Visible = e.Node.Checked;
+                }
+
+                if (e.Node.Nodes.Count > 0)
+                {
+                    PropagateCheckStateToChildren(e.Node, e.Node.Checked);
+                }
+
+                if (e.Node.Parent != null)
+                {
+                    UpdateParentVisualCheckState(e.Node.Parent);
+                }
+
+                UpdateNonPropMeshVisibilities(TreeNodeGeomMeshes);
+                UpdateNonPropMeshVisibilities(TreeNodeGeomRefs);
+                UpdateNonPropMeshVisibilities(TreeNodeGeomBoundaries);
+                UpdateAllPropMeshVisibilities();
             }
+            finally
+            {
+                _isUpdatingTreeChecks = false;
+            }
+
+            Scene.Render();
+        }
+
+
+        private void UpdateParentNodeCheckState(TreeNode parentNode)
+        {
+            if (parentNode == null || _isUpdatingTreeChecks)
+                return;
+
+            try
+            {
+                _isUpdatingTreeChecks = true;
+
+                if (parentNode.Nodes.Count == 0)
+                {
+                }
+                else
+                {
+                    bool allChildrenChecked = true;
+                    bool anyChildChecked = false;
+
+                    foreach (TreeNode childNode in parentNode.Nodes)
+                    {
+                        if (childNode.Checked)
+                        {
+                            anyChildChecked = true;
+                        }
+                        else
+                        {
+                            allChildrenChecked = false;
+                        }
+                    }
+
+                    bool newParentState;
+                    if (anyChildChecked && !allChildrenChecked)
+                    {
+                        newParentState = true;
+                    }
+                    else
+                    {
+                        newParentState = allChildrenChecked;
+                    }
+
+                    if (parentNode.Checked != newParentState)
+                    {
+                        parentNode.Checked = newParentState;
+                    }
+                }
+            }
+            finally
+            {
+                _isUpdatingTreeChecks = false;
+            }
+        }
+
+        private TreeNode? GetRootCategoryNode(TreeNode? node)
+        {
+            if (node == null) return null;
+            TreeNode currentNode = node;
+            while (currentNode.Parent != null)
+            {
+                currentNode = currentNode.Parent;
+            }
+            if (currentNode == TreeNodeGeomMeshes ||
+                currentNode == TreeNodeGeomProps ||
+                currentNode == TreeNodeGeomRefs ||
+                currentNode == TreeNodeGeomBoundaries)
+            {
+                return currentNode;
+            }
+            return null;
         }
 
         private void tbSpawnsFilter_KeyDown(object sender, KeyEventArgs e)
@@ -1051,22 +1677,30 @@ namespace Haven
         {
             if (e.Button == MouseButtons.Right)
             {
-                // Select the clicked node
-                treeViewGeom.SelectedNode = treeViewGeom.GetNodeAt(e.X, e.Y);
-
-                if (treeViewGeom.SelectedNode != null)
+                TreeNode? clickedNode = treeViewGeom.GetNodeAt(e.X, e.Y);
+                if (clickedNode != null)
                 {
-                    if (treeViewGeom.SelectedNode.Parent?.Text == "Props")
+                    treeViewGeom.SelectedNode = clickedNode;
+
+                    TreeNode? rootCategory = null;
+
+                    if (clickedNode.Tag is Mesh)
+                    {
+                        rootCategory = GetRootCategoryNode(clickedNode);
+                    }
+
+                    if (rootCategory == TreeNodeGeomProps)
                     {
                         ContextMenuGeomProp.Show(treeViewGeom, e.Location);
                     }
-                    else if (treeViewGeom.SelectedNode.Parent?.Text == "Meshes" || treeViewGeom.SelectedNode.Parent?.Text == "References")
+                    else if (rootCategory == TreeNodeGeomMeshes || rootCategory == TreeNodeGeomRefs)
                     {
                         ContextMenuGeomMesh.Show(treeViewGeom, e.Location);
                     }
                 }
             }
         }
+
 
         private void mGO2StageToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1173,6 +1807,5 @@ namespace Haven
                 Scene.CurrentScene.Render();
             }
         }
-
     }
 }

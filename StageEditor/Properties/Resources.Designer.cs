@@ -8,10 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Haven.Properties {
+namespace Haven.Properties
+{
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,44 +23,52 @@ namespace Haven.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
-        
+    internal class Resources
+    {
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal Resources()
+        {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        internal static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Haven.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
+        internal static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ply
         ///format ascii 1.0
@@ -82,12 +91,14 @@ namespace Haven.Properties {
         ///-395.743500 885.775085 0.000000
         ///-400. [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ModelCBOX {
-            get {
+        internal static string ModelCBOX
+        {
+            get
+            {
                 return ResourceManager.GetString("ModelCBOX", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ply
         ///format ascii 1.0
@@ -109,12 +120,14 @@ namespace Haven.Properties {
         ///400.000000 -400.000000 400.000000
         ///-400.000000 -400.000000 -400.000000 [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ModelCube {
-            get {
+        internal static string ModelCube
+        {
+            get
+            {
                 return ResourceManager.GetString("ModelCube", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ply
         ///format ascii 1.0
@@ -137,12 +150,14 @@ namespace Haven.Properties {
         ///-820.979004 426.858429 -67.292305
         ///-82 [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ModelDoll {
-            get {
+        internal static string ModelDoll
+        {
+            get
+            {
                 return ResourceManager.GetString("ModelDoll", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ply
         ///format ascii 1.0
@@ -166,12 +181,14 @@ namespace Haven.Properties {
         ///68.672600 0.000000 17.337599
         ///20.293200 0.0000 [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ModelGako {
-            get {
+        internal static string ModelGako
+        {
+            get
+            {
                 return ResourceManager.GetString("ModelGako", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ply
         ///format ascii 1.0
@@ -194,12 +211,14 @@ namespace Haven.Properties {
         ///75.722298 119.466904 -24.523600
         ///85.314102 105.866096 - [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ModelKerotan {
-            get {
+        internal static string ModelKerotan
+        {
+            get
+            {
                 return ResourceManager.GetString("ModelKerotan", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ply
         ///format ascii 1.0
@@ -221,27 +240,33 @@ namespace Haven.Properties {
         ///1325.000000 100.000000 -1879.999878
         ///675.000000 100.000000 -2000.0000 [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ModelTerminal {
-            get {
+        internal static string ModelTerminal
+        {
+            get
+            {
                 return ResourceManager.GetString("ModelTerminal", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] ShaderFrag {
-            get {
+        internal static byte[] ShaderFrag
+        {
+            get
+            {
                 object obj = ResourceManager.GetObject("ShaderFrag", resourceCulture);
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] ShaderVert {
-            get {
+        internal static byte[] ShaderVert
+        {
+            get
+            {
                 object obj = ResourceManager.GetObject("ShaderVert", resourceCulture);
                 return ((byte[])(obj));
             }

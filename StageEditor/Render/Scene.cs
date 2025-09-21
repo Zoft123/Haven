@@ -289,7 +289,7 @@ namespace Haven.Render
             }
             meshShader.SetFloat("ambientStrength", 0.1f);
             meshShader.SetVector3("lightColor", new Vector3(0.8f, 0.8f, 0.8f));
-            meshShader.SetVector3("baseColor", new Vector3(0.6f, 0.7f, 0.85f));;
+            meshShader.SetVector3("baseColor", new Vector3(0.6f, 0.7f, 0.85f)); ;
 
             foreach (var drawable in Children)
                 if (drawable is Mesh m && m.Visible)

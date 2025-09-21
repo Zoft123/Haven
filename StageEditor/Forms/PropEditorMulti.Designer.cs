@@ -1,4 +1,8 @@
-﻿namespace Haven.Render
+﻿using System.Windows.Forms;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
+
+namespace Haven.Render
 {
     partial class PropEditorMulti
     {

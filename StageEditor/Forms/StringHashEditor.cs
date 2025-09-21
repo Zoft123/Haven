@@ -30,7 +30,7 @@ namespace Haven
                 uint hash = Convert.ToUInt32(tbStringHashLookup.Text.Replace("0x", "").Replace(" ", ""), 16);
                 tbStringHashResult.Text = DictionaryFile.GetHashString(hash);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
