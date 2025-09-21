@@ -46,5 +46,38 @@ namespace Haven.Parser
                 }
             }
         }
+
+        public static byte[] BuildHeader(int width, int height, string fourcc, int linearSize)
+        {
+            using var ms = new MemoryStream();
+            using var bw = new BinaryWriter(ms);
+
+            bw.Write(Encoding.ASCII.GetBytes("DDS "));
+
+            bw.Write(124);
+            const int DDSD_CAPS = 0x1, DDSD_HEIGHT = 0x2, DDSD_WIDTH = 0x4, DDSD_PIXELFORMAT = 0x1000, DDSD_LINEARSIZE = 0x80000;
+            bw.Write(DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_LINEARSIZE);
+            bw.Write(height);
+            bw.Write(width);
+            bw.Write(linearSize);
+            bw.Write(0);
+            bw.Write(1);
+
+            for (int i = 0; i < 11; i++) bw.Write(0);
+
+            bw.Write(32);
+            bw.Write(0x4);
+            bw.Write(Encoding.ASCII.GetBytes(fourcc.PadRight(4, '\0')));
+            bw.Write(0);
+            bw.Write(0); bw.Write(0); bw.Write(0); bw.Write(0);
+
+            bw.Write(0x1000);
+            bw.Write(0); bw.Write(0); bw.Write(0);
+
+            bw.Write(0);
+
+            return ms.ToArray();
+        }
+
     }
 }

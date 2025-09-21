@@ -1,12 +1,13 @@
-﻿using OpenTK;
+﻿using Haven.Forms;
 using Haven.Parser;
-using Haven.Render;
-using Haven.Properties;
-using Haven.Forms;
 using Haven.Parser.Geom;
+using Haven.Properties;
+using Haven.Render;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using Serilog.Events;
 using Serilog;
+using Serilog.Events;
+using System.Diagnostics;
 
 namespace Haven
 {
@@ -341,20 +342,27 @@ namespace Haven
 
                     string filename = DictionaryFile.GetHashString(txnFile.ImageInfo[txnIndex].TexId);
                     string fullDir = Path.Combine(folderPath, Path.GetFileNameWithoutExtension(txnFile.Path));
-
                     if (!Directory.Exists(fullDir))
                         Directory.CreateDirectory(fullDir);
 
-                    var txnInfoList = txnFile.GetIndex2List(txnIndex);
-                    bool hasMips = txnInfoList[0].Flag != 0xF0;
-
-                    if (texture == null && textureMips != null)
+                    if (texture == null && textureMips == null)
                     {
-                        txnFile.CreateDdsFromIndex(Path.Combine(fullDir, $"{filename}.dds"), txnIndex, textureMips, null);
+                        if (txnFile.HasEmbeddedTexture(txnIndex))
+                        {
+                            var ddsBytes = txnFile.ExtractEmbeddedDds(txnIndex);
+                            File.WriteAllBytes(Path.Combine(fullDir, $"{filename}.dds"), ddsBytes);
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"No texture found for {filename} in {txnFile.Path}");
+                        }
                     }
                     else
                     {
-                        txnFile.CreateDdsFromIndex(Path.Combine(fullDir, $"{filename}.dds"), txnIndex, texture, textureMips);
+                        if (texture == null && textureMips != null)
+                            txnFile.CreateDdsFromIndex(Path.Combine(fullDir, $"{filename}.dds"), txnIndex, textureMips, null);
+                        else
+                            txnFile.CreateDdsFromIndex(Path.Combine(fullDir, $"{filename}.dds"), txnIndex, texture, textureMips);
                     }
                 }
             }

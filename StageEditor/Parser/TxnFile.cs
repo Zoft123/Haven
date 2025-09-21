@@ -210,6 +210,45 @@ namespace Haven.Parser
                 }
             }
         }
+        public bool HasEmbeddedTexture(int indexNumber)
+        {
+            if (indexNumber < 0 || indexNumber >= Images.Count)
+                return false;
+
+            var img = Images[indexNumber];
+            return img.Offset > 0 && System.IO.File.Exists(Path);
+        }
+
+        public byte[] ExtractEmbeddedDds(int indexNumber)
+        {
+            var img = Images[indexNumber];
+            if (img.Width == 0 || img.Height == 0 || img.Offset == 0)
+                throw new InvalidOperationException($"TXN entry {indexNumber} has no embedded texture data.");
+
+            string fourcc = img.FourCC switch
+            {
+                0x000B => "DXT5",
+                0x0009 => "DXT1",
+                0x0003 => "DXT3",
+                _ => throw new NotSupportedException($"Unsupported FourCC {img.FourCC} in TXN entry {indexNumber}")
+            };
+
+            int blocksWide = Math.Max(1, (img.Width + 3) / 4);
+            int blocksHigh = Math.Max(1, (img.Height + 3) / 4);
+            int bytesPerBlock = (fourcc == "DXT1") ? 8 : 16;
+            int expectedSize = blocksWide * blocksHigh * bytesPerBlock;
+
+            byte[] rawData;
+            using (var fs = new FileStream(Path, FileMode.Open, FileAccess.Read))
+            using (var br = new BinaryReader(fs))
+            {
+                fs.Seek(img.Offset, SeekOrigin.Begin);
+                rawData = br.ReadBytes(expectedSize);
+            }
+
+            byte[] header = DdsFile.BuildHeader(img.Width, img.Height, fourcc, expectedSize);
+            return header.Concat(rawData).ToArray();
+        }
 
         public int GetIndex(TxnInfo index2)
         {
